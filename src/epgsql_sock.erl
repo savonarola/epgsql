@@ -269,6 +269,7 @@ handle_cast(cancel, State = #state{backend = {Pid, Key},
 
 handle_info({DataTag, Sock, Data2}, #state{data = Data, sock = Sock} = State)
   when DataTag == tcp; DataTag == ssl ->
+    ct:print("data[~p] sock: ~p, bin: ~p", [self(), Sock, Data2]),
     loop(State#state{data = <<Data/binary, Data2/binary>>});
 
 handle_info({Closed, Sock}, #state{sock = Sock} = State)
@@ -424,6 +425,7 @@ send_multi(#state{mod = Mod, sock = Sock}, List) ->
                                  end, List)).
 
 do_send(gen_tcp, Sock, Bin) ->
+    ct:print("do_send[~p] sock: ~p, bin: ~p", [self(), Sock, Bin]),
     %% Why not gen_tcp:send/2?
     %% See https://github.com/rabbitmq/rabbitmq-common/blob/v3.7.4/src/rabbit_writer.erl#L367-L384
     %% Because of that we also have `handle_info({inet_reply, ...`
